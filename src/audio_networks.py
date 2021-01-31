@@ -35,8 +35,9 @@ def conv_standard_post(inp, nfilters, ratio, pre_act=False):
         x = Conv2D(nfilters, 3, padding='same')(x)
         x = BatchNormalization()(x)
 
-        x1 = Conv2D(nfilters, 1, padding='same')(x1)
-        x1 = BatchNormalization()(x1)
+    # shortcut
+    x1 = Conv2D(nfilters, 1, padding='same')(x1)
+    x1 = BatchNormalization()(x1)
 
     x = module_addition(x, x1)
 

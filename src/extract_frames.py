@@ -13,7 +13,7 @@ def get_images_from_video(path2video, path2store, second=1, extension='.jpg'):
         extension (str): image format to be stored
     """
 
-    filename = path2video.split('/')[-1][:-4]  # getting video name without extension
+    filename = path2video.split('/')[-1][:-4]  # getting video name without extension TODO: improve
     vidcap = cv2.VideoCapture(path2video)
     count = 0
     success = True

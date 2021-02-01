@@ -1,6 +1,22 @@
 from keras.layers import (Conv2D, Dense, Permute, GlobalAveragePooling2D, Reshape,
                           BatchNormalization, ELU, Lambda, add, multiply)
 import keras.backend as k
+import config
+
+
+def construct_asc_network_csse(**parameters):
+    """
+
+    Args:
+        **parameters ():
+    """
+    nfilters = parameters['nfilters']
+    pooling = parameters['pooling']
+    top_flatten = parameters['top_flatten']
+    ratio = parameters['ratio']
+    pre_act = parameters['pre_act']
+
+    # TODO: construct asc classification network
 
 
 def conv_standard_post(inp, nfilters, ratio, pre_act=False):
@@ -145,3 +161,7 @@ def _tensor_shape(tensor):
 
     """
     return getattr(tensor, '_keras_shape')
+
+
+if __name__ == '__main__':
+    construct_asc_network_csse(**config.audio_network_settings)

@@ -1,6 +1,8 @@
-from keras.layers import (Conv2D, Dense, Permute, GlobalAveragePooling2D, Reshape,
-                          BatchNormalization, ELU, Lambda, add, multiply)
+from keras.layers import (Conv2D, Dense, Permute, GlobalAveragePooling2D, GlobalMaxPooling2D,
+                          Reshape, BatchNormalization, ELU, Lambda, Input, MaxPooling2D,
+                          Dropout, add, multiply)
 import keras.backend as k
+from keras.models import Model
 import config
 
 
@@ -12,11 +14,37 @@ def construct_asc_network_csse(**parameters):
     """
     nfilters = parameters['nfilters']
     pooling = parameters['pooling']
+    dropout = parameters['dropout']
     top_flatten = parameters['top_flatten']
     ratio = parameters['ratio']
     pre_act = parameters['pre_act']
+    spectrogram_dim = parameters['spectrogram_dim']
+    verbose = parameters['verbose']
 
-    # TODO: construct asc classification network
+    inp = Input(shape=spectrogram_dim)
+
+    for i in range(0, len(nfilters)):
+        if i == 0:
+            x = conv_standard_post(inp, nfilters[i], ratio, pre_act=pre_act)
+        else:
+            x = conv_standard_post(x, nfilters[i], ratio, pre_act=pre_act)
+
+        x = MaxPooling2D(pool_size=pooling[i])(x)
+        x = Dropout(rate=dropout[i])(x)
+
+    if top_flatten == 'avg':
+        x = GlobalAveragePooling2D()(x)
+    elif top_flatten == 'max':
+        x = GlobalMaxPooling2D()(x)
+
+    x = Dense(units=config.n_classes, activation='softmax')(x)
+
+    model = Model(inputs=inp, outputs=x)
+
+    if verbose:
+        print(model.summary())
+
+    return model
 
 
 def conv_standard_post(inp, nfilters, ratio, pre_act=False):
@@ -129,14 +157,12 @@ def spatial_squeeze_excite_block(input_tensor):
     return x
 
 
-def module_addition(inp1, inp2, index, suffix):
+def module_addition(inp1, inp2):
     """
 
     Args:
         inp1 ():
         inp2 ():
-        index ():
-        suffix ():
 
     Returns:
 

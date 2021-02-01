@@ -9,7 +9,10 @@ which_train = 'image'  # ['image', 'audio']
 audio_network_settings = {
     'nfilters': (32, 64, 128),
     'pooling': [(1, 10), (1, 5), (1, 5)],
+    'dropout': [0.3, 0.3, 0.3],
     'top_flatten': 'avg',
     'ratio': 2,
-    'pre_act': False
+    'pre_act': False,
+    'spectrogram_dim': (64, 500, 3),
+    'verbose': True
 }

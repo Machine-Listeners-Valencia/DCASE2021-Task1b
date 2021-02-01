@@ -1,2 +1,3 @@
 dummy_wav/
 .idea/
+src/__pycache__/

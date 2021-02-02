@@ -10,7 +10,8 @@ def construct_asc_network_csse(**parameters):
     """
 
     Args:
-        **parameters ():
+        **parameters (dict): setting use to construct the network presented in
+        (https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9118879)
     """
     nfilters = parameters['nfilters']
     pooling = parameters['pooling']
@@ -49,12 +50,12 @@ def construct_asc_network_csse(**parameters):
 
 def conv_standard_post(inp, nfilters, ratio, pre_act=False):
     """
-
+    Block presented in (https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9118879)
     Args:
-        inp ():
-        nfilters ():
-        ratio ():
-        pre_act ():
+        inp (tensor): input to the block
+        nfilters (int): number of filters of a specific block
+        ratio (int): ratio used in the channel excitation
+        pre_act (bool): presented in this work, use a pre-activation residual block
 
     Returns:
 
@@ -159,10 +160,11 @@ def spatial_squeeze_excite_block(input_tensor):
 
 def module_addition(inp1, inp2):
     """
-
+    Module of addition of two tensors with same H and W, but can have different channels
+    If number of channels of the second tensor is the half of the other, this dimension is repeated
     Args:
-        inp1 ():
-        inp2 ():
+        inp1 (tensor): one branch of the addition module
+        inp2 (tensor): other branch of the addition module
 
     Returns:
 
@@ -179,9 +181,9 @@ def module_addition(inp1, inp2):
 
 def _tensor_shape(tensor):
     """
-
+    Obtain shape in order to use channel excitation
     Args:
-        tensor ():
+        tensor (tensor): input tensor
 
     Returns:
 

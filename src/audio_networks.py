@@ -6,7 +6,7 @@ from keras.models import Model
 import config
 
 
-def construct_asc_network_csse(**parameters):
+def construct_asc_network_csse(include_classification=True, **parameters):
     """
 
     Args:
@@ -38,7 +38,8 @@ def construct_asc_network_csse(**parameters):
     elif top_flatten == 'max':
         x = GlobalMaxPooling2D()(x)
 
-    x = Dense(units=config.n_classes, activation='softmax')(x)
+    if include_classification:
+        x = Dense(units=config.n_classes, activation='softmax')(x)
 
     model = Model(inputs=inp, outputs=x)
 

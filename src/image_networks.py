@@ -5,7 +5,8 @@ import config
 
 
 def construct_keras_image_network(net='xception', include_top=False, pooling='avg',
-                                  input_shape=(224, 224, 3), trainable=False, verbose=True):
+                                  input_shape=(224, 224, 3), trainable=False, verbose=True,
+                                  include_classification=True):
     """
     Constructs a keras model with pretrained weights and top layers according to the classification problem
     Args:
@@ -31,7 +32,10 @@ def construct_keras_image_network(net='xception', include_top=False, pooling='av
     for layer in base_model.layers:
         layer.trainable = trainable
 
-    outputs = Dense(units=config.n_classes, activation='softmax')(base_model.layers[-1].output)
+    if include_classification:
+        outputs = Dense(units=config.n_classes, activation='softmax')(base_model.layers[-1].output)
+    else:
+        outputs = base_model.layers[-1].output
 
     model = Model(inputs=base_model.inputs, outputs=outputs)
 

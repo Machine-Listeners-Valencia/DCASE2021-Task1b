@@ -27,8 +27,5 @@ audio_network_settings = {
     'verbose': True
 }
 
-image_network_setting= {
-    'target_size': (150, 150)
-}
 image_train_gen_args = dict(rescale=1./255)
 image_val_gen_args = dict(rescale=1./255)

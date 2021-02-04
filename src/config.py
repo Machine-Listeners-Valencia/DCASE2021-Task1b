@@ -8,6 +8,14 @@ n_classes = 10  # [10]
 batch_size = 32
 epochs = 250
 which_train = 'image'  # ['image', 'audio']
+image_network_settings = {
+    'net': 'xception',
+    'include_top': False,
+    'pooling': 'avg',
+    'input_shape': (224, 224, 3),
+    'trainable': False,
+    'verbose': True
+}
 audio_network_settings = {
     'nfilters': (32, 64, 128),
     'pooling': [(1, 10), (1, 5), (1, 5)],

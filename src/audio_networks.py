@@ -10,6 +10,7 @@ def construct_asc_network_csse(include_classification=True, **parameters):
     """
 
     Args:
+        include_classification (bool): include classification layer
         **parameters (dict): setting use to construct the network presented in
         (https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9118879)
     """

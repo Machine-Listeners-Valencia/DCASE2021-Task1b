@@ -24,7 +24,10 @@ def image_trainer(model, path2data):
     n_training_files = sum([len(files) for r, d, files in os.walk(path2data + '/train')])
     n_val_files = sum([len(files) for r, d, files in os.walk(path2data + '/val')])
 
-    # TODO: callbacks
+    # TODO: callbacks and use .fit without data generator
+    # TODO: https://www.tensorflow.org/api_docs/python/tf/keras/preprocessing/image/ImageDataGenerator
+    # TODO: https://keras.io/api/preprocessing/image/
+    # TODO: https://machinelearningmastery.com/how-to-configure-image-data-augmentation-when-training-deep-learning-neural-networks/
     model.fit_generator(
         train_generator,
         steps_per_epoch=n_training_files // config.batch_size,

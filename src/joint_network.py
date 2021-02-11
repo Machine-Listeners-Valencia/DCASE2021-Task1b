@@ -1,8 +1,8 @@
 import image_networks
 import audio_networks
 import config
-from keras.layers import concatenate, Dense
-from keras.models import Model
+from tensorflow.keras.layers import concatenate, Dense
+from tensorflow.keras.models import Model
 
 
 def construct_joint_network(verbose=True):

@@ -1,6 +1,6 @@
-from keras.applications import Xception, InceptionResNetV2, InceptionV3
-from keras.layers import Dense
-from keras.models import Model
+from tensorflow.keras.applications import Xception, InceptionResNetV2, InceptionV3
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Model
 import config
 
 

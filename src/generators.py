@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow
 
 
-class DataGenerator(tensorflow.keras.utils.Sequence):
+class AudioMixupGenerator(tensorflow.keras.utils.Sequence):
     'Generates data for Keras'
     def __init__(self, x_train, y_train, batch_size=32, alpha=0.2, shuffle=True):
         'Initialization'
@@ -79,7 +79,7 @@ if __name__ == '__main__':
 
         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['categorical_accuracy'])
 
-        train_datagen = DataGenerator(dummy_audio_features, dummy_labels)
+        train_datagen = AudioMixupGenerator(dummy_audio_features, dummy_labels)
 
         model.fit(train_datagen)
 

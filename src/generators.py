@@ -80,10 +80,8 @@ class AudioImageGenerator(tensorflow.keras.utils.Sequence):
         self.shuffle = shuffle
         self.on_epoch_end()
 
-
     def __len__(self):
         'Denotes the number of batches per epoch'
-        # return int(np.floor(len(self.list_IDs) / self.batch_size))
         return int(np.floor(self.sample_num) / self.batch_size)
 
     def __getitem__(self, index):
@@ -110,8 +108,7 @@ class AudioImageGenerator(tensorflow.keras.utils.Sequence):
         y = np.empty((self.batch_size, self.n_classes), dtype=int)
         # Generate data
         for i in range(0, len(indexes)):
-
-            X_image[i,], X_audio[i,], y[i] = pickle.load(open(self.path2pickles + '{}.pkl'.format(indexes[i]+1),
+            X_image[i,], X_audio[i,], y[i] = pickle.load(open(self.path2pickles + '{}.pkl'.format(indexes[i] + 1),
                                                               'rb'))
 
         return [X_image, X_audio], y
@@ -141,7 +138,6 @@ if __name__ == '__main__':
         model.fit(train_datagen)
 
     if test_audio_image:
-
         from joint_network import construct_dummy_joint_network
         import os
 

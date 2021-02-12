@@ -2,6 +2,7 @@
 
 import numpy as np
 import tensorflow
+import pickle
 
 
 class AudioMixupGenerator(tensorflow.keras.utils.Sequence):
@@ -63,11 +64,80 @@ class AudioMixupGenerator(tensorflow.keras.utils.Sequence):
         return X, y
 
 
+class AudioImageGenerator(tensorflow.keras.utils.Sequence):
+    'Generates data for Keras'
+
+    def __init__(self, sample_num, dim_image, dim_audio, path2pickles,
+                 batch_size=32,
+                 n_classes=10, shuffle=True):  # list_IDs, labels, dim=(32, 32, 32), n_channels=1,
+        'Initialization'
+        # self.dim = dim
+        self.sample_num = sample_num
+        self.dim_image = dim_image
+        self.dim_audio = dim_audio
+        self.path2pickles = path2pickles
+        self.batch_size = batch_size
+        # self.labels = labels
+        # self.list_IDs = list_IDs
+        # self.n_channels = n_channels
+        self.n_classes = n_classes
+        self.shuffle = shuffle
+        self.on_epoch_end()
+
+
+    def __len__(self):
+        'Denotes the number of batches per epoch'
+        # return int(np.floor(len(self.list_IDs) / self.batch_size))
+        return int(np.floor(self.sample_num) / self.batch_size)
+
+    def __getitem__(self, index):
+        'Generate one batch of data'
+        # Generate indexes of the batch
+        indexes = self.indexes[index * self.batch_size:(index + 1) * self.batch_size]
+
+        # Find list of IDs
+        # list_IDs_temp = [self.list_IDs[k] for k in indexes]
+
+        # Generate data
+        X, y = self.__data_generation(indexes)
+
+        return X, y
+
+    def on_epoch_end(self):
+        'Updates indexes after each epoch'
+        self.indexes = np.arange(self.sample_num)
+        if self.shuffle == True:
+            np.random.shuffle(self.indexes)
+
+    def __data_generation(self, indexes):
+        'Generates data containing batch_size samples'  # X : (n_samples, *dim, n_channels)
+        # Initialization
+        X_image = np.empty((self.batch_size, *self.dim_image))
+        X_audio = np.empty((self.batch_size, *self.dim_audio))
+        y = np.empty((self.batch_size, self.n_classes), dtype=int)
+        # Generate data
+        for i in range(0, len(indexes)):
+
+            # Store sample
+            # X_image[i,] = np.load('data/' + ID + '.npy') # TODO: data to image
+            # X_audio[i,] = np.load('data/' + ID + '.npy') # TODO: data to audio
+
+            # Store class
+            # y[i] = self.labels[ID]
+            X_image[i,], X_audio[i,], y[i] = pickle.load(open(self.path2pickles + '{}.pkl'.format(indexes[i]+1),
+                                                              'rb'))
+
+        # return [X_image, X_audio], tensorflow.keras.utils.to_categorical(y, num_classes=self.n_classes)
+
+        return [X_image, X_audio], y
+
+
 if __name__ == '__main__':
 
     import config
 
     test_audio = True
+    test_audio_image = True
 
     if test_audio:
         from audio_networks import construct_asc_network_csse
@@ -84,3 +154,21 @@ if __name__ == '__main__':
         train_datagen = AudioMixupGenerator(dummy_audio_features, dummy_labels)
 
         model.fit(train_datagen)
+
+    if test_audio_image:
+
+        from joint_network import construct_dummy_joint_network
+        import os
+
+        home = os.getenv('HOME')
+        model = construct_dummy_joint_network()
+
+        train_datagen = AudioImageGenerator(sample_num=5,
+                                            dim_image=config.image_network_settings['input_shape'],
+                                            dim_audio=config.audio_network_settings['spectrogram_dim'],
+                                            path2pickles=home + '/repos/DCASE2021-Task1b/data/dummy_test/',
+                                            batch_size=2)
+
+        model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['categorical_accuracy'])
+
+        model.fit(train_datagen, epochs=3)

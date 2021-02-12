@@ -65,21 +65,17 @@ class AudioMixupGenerator(tensorflow.keras.utils.Sequence):
 
 
 class AudioImageGenerator(tensorflow.keras.utils.Sequence):
-    'Generates data for Keras'
+    'Generates data for Keras, assumes a pickle containing one image, audio and one hot labels'
 
     def __init__(self, sample_num, dim_image, dim_audio, path2pickles,
                  batch_size=32,
                  n_classes=10, shuffle=True):  # list_IDs, labels, dim=(32, 32, 32), n_channels=1,
         'Initialization'
-        # self.dim = dim
         self.sample_num = sample_num
         self.dim_image = dim_image
         self.dim_audio = dim_audio
         self.path2pickles = path2pickles
         self.batch_size = batch_size
-        # self.labels = labels
-        # self.list_IDs = list_IDs
-        # self.n_channels = n_channels
         self.n_classes = n_classes
         self.shuffle = shuffle
         self.on_epoch_end()
@@ -94,9 +90,6 @@ class AudioImageGenerator(tensorflow.keras.utils.Sequence):
         'Generate one batch of data'
         # Generate indexes of the batch
         indexes = self.indexes[index * self.batch_size:(index + 1) * self.batch_size]
-
-        # Find list of IDs
-        # list_IDs_temp = [self.list_IDs[k] for k in indexes]
 
         # Generate data
         X, y = self.__data_generation(indexes)
@@ -118,16 +111,8 @@ class AudioImageGenerator(tensorflow.keras.utils.Sequence):
         # Generate data
         for i in range(0, len(indexes)):
 
-            # Store sample
-            # X_image[i,] = np.load('data/' + ID + '.npy') # TODO: data to image
-            # X_audio[i,] = np.load('data/' + ID + '.npy') # TODO: data to audio
-
-            # Store class
-            # y[i] = self.labels[ID]
             X_image[i,], X_audio[i,], y[i] = pickle.load(open(self.path2pickles + '{}.pkl'.format(indexes[i]+1),
                                                               'rb'))
-
-        # return [X_image, X_audio], tensorflow.keras.utils.to_categorical(y, num_classes=self.n_classes)
 
         return [X_image, X_audio], y
 

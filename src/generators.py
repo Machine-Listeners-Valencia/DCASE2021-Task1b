@@ -6,6 +6,7 @@ import tensorflow
 
 class AudioMixupGenerator(tensorflow.keras.utils.Sequence):
     'Generates data for Keras'
+
     def __init__(self, x_train, y_train, batch_size=32, alpha=0.2, shuffle=True):
         'Initialization'
         self.X_train = x_train
@@ -61,6 +62,7 @@ class AudioMixupGenerator(tensorflow.keras.utils.Sequence):
 
         return X, y
 
+
 if __name__ == '__main__':
 
     import config
@@ -82,4 +84,3 @@ if __name__ == '__main__':
         train_datagen = AudioMixupGenerator(dummy_audio_features, dummy_labels)
 
         model.fit(train_datagen)
-

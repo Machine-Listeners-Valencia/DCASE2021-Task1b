@@ -9,7 +9,7 @@ batch_size = 32
 epochs = 250
 which_train = 'image'  # ['image', 'audio']
 image_network_settings = {
-    'net': 'xception',
+    'net': 'efficientnet-0',
     'include_top': False,
     'pooling': 'avg',
     'input_shape': (224, 224, 3),

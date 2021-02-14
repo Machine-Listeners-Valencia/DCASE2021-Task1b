@@ -37,7 +37,7 @@ def split_mit67_train_test(path2store, path2trainfile, path2testfile):
     for j in tqdm(range(0, len(trainfiles))):
         copyfile(os.path.join(path2images, trainfiles[j]), os.path.join(path2train_split, trainfiles[j]))
 
-    print('Copy training files to corresponding label folder...')
+    print('Copy testing files to corresponding label folder...')
     # Copy test files
     for jj in tqdm(range(0, len(testfiles))):
         copyfile(os.path.join(path2images, testfiles[jj]), os.path.join(path2test_split, testfiles[jj]))

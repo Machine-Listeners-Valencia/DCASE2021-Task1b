@@ -30,3 +30,10 @@ audio_network_settings = {
 
 image_train_gen_args = dict(rescale=1./255)
 image_val_gen_args = dict(rescale=1./255)
+
+callbacks_settings = {
+    'monitor': 'val_categorical_accuracy',
+    'lr_factor': 0.5,
+    'lr_patience': 20,
+    'finish_patience': 40
+}

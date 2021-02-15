@@ -3,7 +3,7 @@ import config
 import os
 
 
-def image_trainer(model, path2data):
+def image_trainer(model, path2data, callbacks=None):
     train_gen = ImageDataGenerator(**config.image_train_gen_args)
     val_gen = ImageDataGenerator(**config.image_val_gen_args)
 
@@ -21,19 +21,18 @@ def image_trainer(model, path2data):
         class_mode='categorical',
         shuffle=True)
 
-    n_training_files = sum([len(files) for r, d, files in os.walk(path2data + '/train')])
-    n_val_files = sum([len(files) for r, d, files in os.walk(path2data + '/val')])
+    # n_training_files = sum([len(files) for r, d, files in os.walk(path2data + '/train')])
+    # n_val_files = sum([len(files) for r, d, files in os.walk(path2data + '/val')])
 
     # TODO: callbacks and use .fit without data generator
     # TODO: https://www.tensorflow.org/api_docs/python/tf/keras/preprocessing/image/ImageDataGenerator
     # TODO: https://keras.io/api/preprocessing/image/
     # TODO: https://machinelearningmastery.com/how-to-configure-image-data-augmentation-when-training-deep-learning-neural-networks/
-    model.fit_generator(
+    model.fit(
         train_generator,
-        steps_per_epoch=n_training_files // config.batch_size,
         epochs=config.epochs,
         validation_data=val_generator,
-        validation_steps=n_val_files // config.batch_size)
+        callbacks=callbacks)
 
 
 if __name__ == '__main__':

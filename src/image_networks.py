@@ -1,47 +1,57 @@
 import tensorflow
 from tensorflow.keras.applications import Xception, InceptionResNetV2, InceptionV3
 import efficientnet.tfkeras as efn
-from tensorflow.keras.layers import Dense, Input
+from tensorflow.keras.layers import Dense, GlobalMaxPooling2D, GlobalAveragePooling2D
 from tensorflow.keras.models import Model
 import config
 
 
-def construct_efficientnet(type, input_shape, verbose=True):
+def construct_efficientnet(type, input_shape, include_top, pooling='avg', verbose=True):
     if type == 0:
-        primary_model = efn.EfficientNetB0(weights='imagenet')
+        primary_model = efn.EfficientNetB0(weights='imagenet',
+                                           input_shape=input_shape,
+                                           include_top=include_top)
     elif type == 1:
-        primary_model = efn.EfficientNetB1(weights='imagenet')
+        primary_model = efn.EfficientNetB1(weights='imagenet',
+                                           input_shape=input_shape,
+                                           include_top=include_top)
     elif type == 2:
-        primary_model = efn.EfficientNetB2(weights='imagenet')
+        primary_model = efn.EfficientNetB2(weights='imagenet',
+                                           input_shape=input_shape,
+                                           include_top=include_top)
     elif type == 3:
-        primary_model = efn.EfficientNetB3(weights='imagenet')
+        primary_model = efn.EfficientNetB3(weights='imagenet',
+                                           input_shape=input_shape,
+                                           include_top=include_top)
     elif type == 4:
-        primary_model = efn.EfficientNetB4(weights='imagenet')
+        primary_model = efn.EfficientNetB4(weights='imagenet',
+                                           input_shape=input_shape,
+                                           include_top=include_top)
     elif type == 5:
-        primary_model = efn.EfficientNetB5(weights='imagenet')
+        primary_model = efn.EfficientNetB5(weights='imagenet',
+                                           input_shape=input_shape,
+                                           include_top=include_top)
     elif type == 6:
-        primary_model = efn.EfficientNetB6(weights='imagenet')
+        primary_model = efn.EfficientNetB6(weights='imagenet',
+                                           input_shape=input_shape,
+                                           include_top=include_top)
     elif type == 7:
-        primary_model = efn.EfficientNetB7(weights='imagenet')
+        primary_model = efn.EfficientNetB7(weights='imagenet',
+                                           input_shape=input_shape,
+                                           include_top=include_top)
 
-    # TODO: change input shape
-    # TODO: m  = efn.EfficientNetB0(weights='imagenet', input_shape = (100,100,3), include_top=False)
-    # primary_model.layers.pop(0)  # removing input layer
-    # primary_model.layers.pop(-1)
+    if pooling == 'avg':
+        x = GlobalAveragePooling2D()(primary_model.layers[-1].output)
+    else:
+        x = GlobalMaxPooling2D()(primary_model.layers[-1].output)
 
-    model = Model(inputs=primary_model.input, outputs=primary_model.layers[-2].output)
+    # if verbose:
+    #     print(primary_model.summary())
+
+    model = Model(inputs=primary_model.input, outputs=x)
 
     if verbose:
         print(model.summary())
-
-    # inp = Input(shape=input_shape)  # creating layer with specific input shape
-
-    # out = primary_model(inp)
-
-    # model = Model(inputs=inp, outputs=out)
-
-    # if verbose:
-    #     print(model.summary())
 
     return model
 
@@ -80,7 +90,8 @@ def construct_keras_image_network(include_classification=True, **parameters):
         base_model = InceptionV3(input_shape=input_shape, include_top=include_top, pooling=pooling)
 
     elif 'efficient' in net:
-        base_model = construct_efficientnet(int(net.split('-')[1]), input_shape)
+        base_model = construct_efficientnet(int(net.split('-')[1]), input_shape=input_shape,
+                                            include_top=include_top)
 
     for layer in base_model.layers:
         layer.trainable = trainable

@@ -8,9 +8,7 @@ def train():
         model = construct_keras_image_network(include_classification=True,
                                               **config.image_network_settings)
 
-
         image_trainer(model, config.path2image_data)
-    # TODO: import model
 
 
 if __name__ == '__main__':

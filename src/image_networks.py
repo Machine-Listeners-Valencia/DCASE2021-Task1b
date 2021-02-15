@@ -25,6 +25,7 @@ def construct_efficientnet(type, input_shape, verbose=True):
         primary_model = efn.EfficientNetB7(weights='imagenet')
 
     # TODO: change input shape
+    # TODO: m  = efn.EfficientNetB0(weights='imagenet', input_shape = (100,100,3), include_top=False)
     # primary_model.layers.pop(0)  # removing input layer
     # primary_model.layers.pop(-1)
 

@@ -3,3 +3,4 @@ dummy_wav/
 src/__pycache__/
 data/
 src/transfer_learning/vgg16places365/__pycache__/
+src/transfer_learning/__pycache__/

@@ -8,14 +8,14 @@ def image_trainer(model, path2data):
     val_gen = ImageDataGenerator(**config.image_val_gen_args)
 
     train_generator = train_gen.flow_from_directory(
-        path2data + '/train',  # this is the target directory
+        os.path.join(path2data, 'train'),  # this is the target directory
         target_size=config.image_network_settings['input_shape'][0:2],  # all images will be resized to 150x150
         batch_size=config.batch_size,
         class_mode='categorical',
         shuffle=True)
 
     val_generator = val_gen.flow_from_directory(
-        path2data + '/val',  # this is the target directory
+        os.path.join(path2data, 'val'),  # this is the target directory
         target_size=config.image_network_settings['input_shape'][0:2],  # all images will be resized to 150x150
         batch_size=config.batch_size,
         class_mode='categorical',

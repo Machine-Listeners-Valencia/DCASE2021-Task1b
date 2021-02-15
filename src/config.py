@@ -1,8 +1,10 @@
 """
 Configuration file: commented in list form are indicated the supported options
 """
+import os
+home = os.getenv('HOME')
 
-path2image = ''
+path2image_data = os.path.join(home, '/repos/DCASE2021-Task1b/data/mit67/indoorCVPR_09/split')
 n_classes = 10  # [10]
 batch_size = 32
 epochs = 250

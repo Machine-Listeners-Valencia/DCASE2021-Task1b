@@ -37,7 +37,7 @@ def split_mit67_train_test(path2store, path2trainfile, path2testfile):
     unique_labels = list(set(labels))
 
     path2train_split = os.path.join(path2split, 'train')
-    path2test_split = os.path.join(path2split, 'test')
+    path2test_split = os.path.join(path2split, 'val')
 
     create_folder(path2train_split)
     create_folder(path2test_split)

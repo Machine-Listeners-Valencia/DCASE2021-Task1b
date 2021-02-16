@@ -1,10 +1,14 @@
 import config
 from training_callbacks import create_callbacks
+from utils import create_training_outputs_folder
 
 
-def train():
-    # TODO: create folder and dict with settings
-    callbacks = create_callbacks('jelou!', **config.callbacks_settings)
+def train(path2store):
+    # TODO: dict with settings
+
+    path2callbacks = create_callbacks(path2store)
+
+    callbacks = create_callbacks(path2callbacks, **config.callbacks_settings)
 
     if config.which_train == 'image':
         from trainers import image_trainer

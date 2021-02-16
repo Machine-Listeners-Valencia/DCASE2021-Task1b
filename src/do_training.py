@@ -24,6 +24,9 @@ def train(path2store):
 
         image_trainer(model, config.path2image_data, callbacks=callbacks)
 
+    if config.which_train == 'audio':
+        print('TODO')
+
 
 if __name__ == '__main__':
 

@@ -1,6 +1,7 @@
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import config
 import os
+from generators import AudioMixupGenerator
 
 
 def image_trainer(model, path2data, callbacks=None):
@@ -33,6 +34,28 @@ def image_trainer(model, path2data, callbacks=None):
         epochs=config.epochs,
         validation_data=val_generator,
         callbacks=callbacks)
+
+
+def audio_trainer(model, path2features, callbacks=None):
+    import h5py
+
+    hf_train = h5py.File(path2features + 'train.h5')  # TODO
+    x_train = hf_train['features']
+    y_train = hf_train['labels']
+    hf_train.close()
+
+    hf_val = h5py.File(path2features + 'val.h5')
+    x_val = hf_val['features']
+    y_val = hf_val['labels']
+    hf_val.close()
+
+    audio_gen = AudioMixupGenerator(x_train=x_train, y_train=y_train,
+                                    alpha=config.audio_train_gen_args['alpha'])
+
+    model.fit(audio_gen,
+              epochs=config.epochs,
+              validation_data=(x_val, y_val),
+              callbacks=callbacks)
 
 
 if __name__ == '__main__':

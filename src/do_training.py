@@ -32,4 +32,4 @@ if __name__ == '__main__':
 
     home = os.getenv('HOME')
 
-    train(os.path.join(home, 'repos/DCASE2021-Task1b/training_outputs'))
+    train(config.path2outputs)

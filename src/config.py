@@ -5,6 +5,7 @@ import os
 home = os.getenv('HOME')
 
 path2image_data = os.path.join(home, '/repos/DCASE2021-Task1b/data/mit67/indoorCVPR_09/split')
+path2outputs = os.path.join(home, 'repos/DCASE2021-Task1b/training_outputs')
 n_classes = 10  # [10]
 batch_size = 32
 epochs = 250

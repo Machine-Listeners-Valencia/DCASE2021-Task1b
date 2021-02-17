@@ -1,8 +1,8 @@
-from keras.layers import (Conv2D, Dense, Permute, GlobalAveragePooling2D, GlobalMaxPooling2D,
-                          Reshape, BatchNormalization, ELU, Lambda, Input, MaxPooling2D,
-                          Dropout, add, multiply)
-import keras.backend as k
-from keras.models import Model
+from tensorflow.keras.layers import (Conv2D, Dense, Permute, GlobalAveragePooling2D, GlobalMaxPooling2D,
+                                    Reshape, BatchNormalization, ELU, Lambda, Input, MaxPooling2D,
+                                    Dropout, add, multiply)
+import tensorflow.keras.backend as k
+from tensorflow.keras.models import Model
 import config
 
 
@@ -190,7 +190,8 @@ def _tensor_shape(tensor):
     Returns:
 
     """
-    return getattr(tensor, '_keras_shape')
+    return getattr(tensor, '_shape_val')
+    #return getattr(tensor, '_keras_shape')
 
 
 if __name__ == '__main__':

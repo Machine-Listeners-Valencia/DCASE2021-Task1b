@@ -5,7 +5,11 @@ import os
 import logging
 
 
-def train(path2callbacks, logger):
+def train(path2callbacks):
+    logger = logging.getLogger(__name__)
+    logger.info('STARTING TRAINING')
+    logger.info('TRAINING DOMAIN: {}'.format(config.which_train))
+    logger.info('ALL TRAINING INFORMATION WILL BE STORED IN: {}'.format(path2callbacks))
     logger.info('CREATING CALLBACKS')
     callbacks = create_callbacks(path2callbacks, **config.callbacks_settings)
     save_to_json(os.path.join(path2callbacks, 'callbacks.json'), config.callbacks_settings)
@@ -59,22 +63,12 @@ def train(path2callbacks, logger):
 if __name__ == '__main__':
     path2callbacks = create_training_outputs_folder(config.path2outputs)
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.NOTSET)
-
-    console_handler = logging.StreamHandler()
-    console_handler_format = '%(asctime)s | %(levelname)s: %(message)s'
-    console_handler.setFormatter(logging.Formatter(console_handler_format))
-    logger.addHandler(console_handler)
-
-    file_handler = logging.FileHandler(os.path.join(path2callbacks, 'logger.log'))
-    file_handler_format = '%(asctime)s | %(levelname)s | %(lineno)d: %(message)s'
-    file_handler.setFormatter(logging.Formatter(file_handler_format))
-    logger.addHandler(file_handler)
-
-    home = os.getenv('HOME')
-
-    logger.info('STARTING TRAINING')
-    logger.info('TRAINING DOMAIN: {}'.format(config.which_train))
-    logger.info('ALL TRAINING INFORMATION WILL BE STORED IN: {}'.format(path2callbacks))
-    train(path2callbacks, logger)
+    logging.basicConfig(
+        level=logging.NOTSET,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[
+            logging.FileHandler(os.path.join(path2callbacks, 'logger.log')),
+            logging.StreamHandler()
+        ]
+    )
+    train(path2callbacks)

@@ -1,12 +1,14 @@
 import config
 from training_callbacks import create_callbacks
-from utils import create_training_outputs_folder, save_to_json
+from utils import create_training_outputs_folder, save_to_json, create_logger
 import os
-import logging
+
+path2callbacks = create_training_outputs_folder(config.path2outputs)
+
+logger = create_logger(os.path.join(path2callbacks, 'logger.log'), level='INFO')
 
 
 def train(path2callbacks):
-    logger = logging.getLogger(__name__)
     logger.info('STARTING TRAINING')
     logger.info('TRAINING DOMAIN: {}'.format(config.which_train))
     logger.info('ALL TRAINING INFORMATION WILL BE STORED IN: {}'.format(path2callbacks))
@@ -27,8 +29,8 @@ def train(path2callbacks):
         logger.info(
             'IMAGE NETWORK CONFIGURATION CAN BE CHECKED IN: {}'.format(os.path.join(path2callbacks,
                                                                                     'image_network_settings.json')))
-        save_to_json(save_to_json(os.path.join(path2callbacks, 'image_generator.json'),
-                                  config.image_train_gen_args))
+        save_to_json(os.path.join(path2callbacks, 'image_generator.json'),
+                     config.image_train_gen_args)
 
         logger.info(
             'IMAGE TRAINING CONFIGURATION CAN BE CHECKED IN: {}'.format(os.path.join(path2callbacks,
@@ -49,8 +51,8 @@ def train(path2callbacks):
             'AUDIO NETWORK CONFIGURATION CAN BE CHECKED IN: {}'.format(os.path.join(path2callbacks,
                                                                                     'audio_network_settings.json')))
 
-        save_to_json(save_to_json(os.path.join(path2callbacks, 'audio_generator.json'),
-                                  config.audio_train_gen_args))
+        save_to_json(os.path.join(path2callbacks, 'audio_generator.json'),
+                     config.audio_train_gen_args)
 
         logger.info(
             'AUDIO TRAINING CONFIGURATION CAN BE CHECKED IN: {}'.format(os.path.join(path2callbacks,
@@ -61,14 +63,6 @@ def train(path2callbacks):
 
 
 if __name__ == '__main__':
-    path2callbacks = create_training_outputs_folder(config.path2outputs)
+    #path2callbacks = create_training_outputs_folder(config.path2outputs)
 
-    logging.basicConfig(
-        level=logging.NOTSET,
-        format="%(asctime)s [%(levelname)s] %(message)s",
-        handlers=[
-            logging.FileHandler(os.path.join(path2callbacks, 'logger.log')),
-            logging.StreamHandler()
-        ]
-    )
     train(path2callbacks)

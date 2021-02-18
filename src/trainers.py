@@ -8,7 +8,6 @@ from utils import convert_to_preferred_format
 
 
 def image_trainer(model, path2data, callbacks=None):
-    logger = logging.getLogger(__name__)
 
     train_gen = ImageDataGenerator(**config.image_train_gen_args)
     val_gen = ImageDataGenerator(**config.image_val_gen_args)
@@ -27,28 +26,31 @@ def image_trainer(model, path2data, callbacks=None):
         class_mode='categorical',
         shuffle=True)
 
-    # n_training_files = sum([len(files) for r, d, files in os.walk(path2data + '/train')])
-    # n_val_files = sum([len(files) for r, d, files in os.walk(path2data + '/val')])
+    n_training_files = sum([len(files) for r, d, files in os.walk(path2data + '/train')])
+    n_val_files = sum([len(files) for r, d, files in os.walk(path2data + '/val')])
 
     # TODO: callbacks and use .fit without data generator
     # TODO: https://www.tensorflow.org/api_docs/python/tf/keras/preprocessing/image/ImageDataGenerator
     # TODO: https://keras.io/api/preprocessing/image/
     # TODO: https://machinelearningmastery.com/how-to-configure-image-data-augmentation-when-training-deep-learning-neural-networks/
+    logger = logging.getLogger('my_logger')
+    start_time = time.time()
+
+    model.compile(optimizer="Adam", loss="categorical_crossentropy", metrics=["categorical_accuracy"])
 
     logger.info('STARTING FITTING')
-
-    start_time = time.time()
 
     model.fit(
         train_generator,
         epochs=config.epochs,
+        steps_per_epoch = int(n_training_files/config.batch_size),
         validation_data=val_generator,
+        validation_steps=int(n_val_files/config.batch_size),
         callbacks=callbacks)
 
     fitting_time = (time.time() - start_time)
     fitting_time = convert_to_preferred_format(fitting_time)
-
-    logger.debug('FITTING TIME: {}'.format(fitting_time))
+    logger.info('TRAINING TIME: {}'.format(fitting_time))
     logger.info('TRAINING FINISHED SUCCESSFULLY')
 
 

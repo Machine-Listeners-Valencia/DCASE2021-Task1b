@@ -4,12 +4,12 @@ Configuration file: commented in list form are indicated the supported options
 import os
 home = os.getenv('HOME')
 
-path2image_data = os.path.join(home, '/repos/DCASE2021-Task1b/data/mit67/indoorCVPR_09/split')
-path2audio_data = os.path.join(home, '/repos/DCASE2021-Task1b/data/gammatone/64')
+path2image_data = os.path.join(home, 'repos/DCASE2021-Task1b/data/mit67/indoorCVPR_09/split')
+path2audio_data = os.path.join(home, 'repos/DCASE2021-Task1b/data/gammatone/64')
 path2outputs = os.path.join(home, 'repos/DCASE2021-Task1b/training_outputs')
 n_classes = 67  # [10]
-batch_size = 32
-epochs = 250
+batch_size = 8
+epochs = 2
 which_train = 'image'  # ['image', 'audio']
 image_network_settings = {
     'net': 'efficientnet-0',

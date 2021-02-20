@@ -96,6 +96,7 @@ def construct_keras_image_network(include_classification=True, **parameters):
     else:
         logger = logging.getLogger('my_logger')
         logger.error('INDICATED NETWORK {} NOT SUPPORTED'.format(net))
+        logger.info('PLEASE CHECK config FILE TO CHECK POSSIBLE OPTIONS'.format(net))
         sys.exit()
 
     for layer in base_model.layers:

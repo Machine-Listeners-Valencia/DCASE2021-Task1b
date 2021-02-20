@@ -3,6 +3,8 @@ import efficientnet.tfkeras as efn
 from tensorflow.keras.layers import Dense, GlobalMaxPooling2D, GlobalAveragePooling2D
 from tensorflow.keras.models import Model
 import config
+import logging
+import sys
 
 
 def construct_efficientnet(type, input_shape, include_top, pooling='avg', verbose=True):
@@ -91,6 +93,10 @@ def construct_keras_image_network(include_classification=True, **parameters):
     elif 'efficient' in net:
         base_model = construct_efficientnet(int(net.split('-')[1]), input_shape=input_shape,
                                             include_top=include_top)
+    else:
+        logger = logging.getLogger('my_logger')
+        logger.error('INDICATED NETWORK {} NOT SUPPORTED'.format(net))
+        sys.exit()
 
     for layer in base_model.layers:
         layer.trainable = trainable

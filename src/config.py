@@ -14,7 +14,7 @@ which_train = 'image'  # ['image', 'audio']
 image_network_settings = {
     # possible nets: [efficientnet-1-2-3-4-5-6-7, inception_resnet_v2, xception, inception_v3,
     # places365 ]
-    'net': 'places-365',
+    'net': 'places365',
     'include_top': False,
     'pooling': 'avg',
     'input_shape': (224, 224, 3),

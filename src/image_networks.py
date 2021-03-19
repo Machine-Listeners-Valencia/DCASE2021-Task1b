@@ -5,6 +5,7 @@ from tensorflow.keras.models import Model
 import config
 import logging
 import sys
+from transfer_learning.vgg16places365.vgg16_hybrid_places_1365 import VGG16_Hybrid_1365
 
 
 def construct_efficientnet(type, input_shape, include_top, pooling='avg', verbose=True):
@@ -84,6 +85,10 @@ def construct_keras_image_network(include_classification=True, **parameters):
     if net is 'xception':
         base_model = Xception(input_shape=input_shape, include_top=include_top, pooling=pooling)
 
+    elif net is 'places365':
+        base_model = VGG16_Hybrid_1365(input_shape=input_shape, include_top=include_top,
+                                       pooling=pooling, weights='places')
+
     elif net is 'inception_resnet_v2':
         base_model = InceptionResNetV2(input_shape=input_shape, include_top=include_top, pooling=pooling)
 
@@ -93,6 +98,7 @@ def construct_keras_image_network(include_classification=True, **parameters):
     elif 'efficient' in net:
         base_model = construct_efficientnet(int(net.split('-')[1]), input_shape=input_shape,
                                             include_top=include_top)
+
     else:
         logger = logging.getLogger('my_logger')
         logger.error('INDICATED NETWORK {} NOT SUPPORTED'.format(net))

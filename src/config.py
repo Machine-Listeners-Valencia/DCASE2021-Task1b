@@ -4,12 +4,12 @@ Configuration file: commented in list form are indicated the supported options
 import os
 home = os.getenv('HOME')
 
-path2image_data = os.path.join(home, 'repos/DCASE2021-Task1b/data/mit67/indoorCVPR_09/split')
+path2image_data = os.path.join(home, 'repos/DCASE2021-Task1b/data/audiovisual/images')
 path2audio_data = os.path.join(home, 'repos/DCASE2021-Task1b/data/gammatone/64')
 path2outputs = os.path.join(home, 'repos/DCASE2021-Task1b/training_outputs')
-n_classes = 67  # [10]
-batch_size = 8
-epochs = 2
+n_classes = 10  # [10]
+batch_size = 16
+epochs = 150
 which_train = 'image'  # ['image', 'audio']
 image_network_settings = {
     'net': 'efficientnet-0',  # [efficientnet-1-2-3-4-5-6-7, inception_resnet_v2, xception, inception_v3]
@@ -30,7 +30,15 @@ audio_network_settings = {
     'verbose': True
 }
 
-image_train_gen_args = dict(rescale=1./255)
+image_train_gen_args = dict(rescale=1./255,
+                            rotation_range=40,
+                            width_shift_range=0.2,
+                            height_shift_range=0.2,
+                            shear_range=0.2,
+                            zoom_range=0.2,
+                            horizontal_flip=True,
+                            fill_mode='nearest'
+                            )
 image_val_gen_args = dict(rescale=1./255)
 
 audio_train_gen_args = {

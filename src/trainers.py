@@ -20,16 +20,15 @@ def image_trainer(model, path2data, callbacks=None):
         shuffle=True)
 
     val_generator = val_gen.flow_from_directory(
-        os.path.join(path2data, 'val'),  # this is the target directory
+        os.path.join(path2data, 'evaluate'),  # this is the target directory
         target_size=config.image_network_settings['input_shape'][0:2],  # all images will be resized
         batch_size=config.batch_size,
         class_mode='categorical',
         shuffle=True)
 
     n_training_files = sum([len(files) for r, d, files in os.walk(path2data + '/train')])
-    n_val_files = sum([len(files) for r, d, files in os.walk(path2data + '/val')])
+    n_val_files = sum([len(files) for r, d, files in os.walk(path2data + '/evaluate')])
 
-    # TODO: callbacks and use .fit without data generator
     # TODO: https://www.tensorflow.org/api_docs/python/tf/keras/preprocessing/image/ImageDataGenerator
     # TODO: https://keras.io/api/preprocessing/image/
     # TODO: https://machinelearningmastery.com/how-to-configure-image-data-augmentation-when-training-deep-learning-neural-networks/
@@ -43,9 +42,9 @@ def image_trainer(model, path2data, callbacks=None):
     model.fit(
         train_generator,
         epochs=config.epochs,
-        steps_per_epoch = int(n_training_files/config.batch_size),
+        steps_per_epoch=int(n_training_files/config.batch_size),
         validation_data=val_generator,
-        validation_steps=int(n_val_files/config.batch_size),
+        validation_steps=int(n_val_files/config.batch_size) + 1,
         callbacks=callbacks)
 
     fitting_time = (time.time() - start_time)

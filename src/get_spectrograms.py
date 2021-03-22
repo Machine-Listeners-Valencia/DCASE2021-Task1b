@@ -7,6 +7,13 @@ from os import listdir
 from os.path import isfile, join
 import numpy as np
 import h5py
+from sklearn.preprocessing import LabelEncoder
+from tqdm import tqdm
+
+'''
+https://machinelearningmastery.com/how-to-one-hot-encode-sequence-data-in-python/
+https://stackoverflow.com/questions/28656736/using-scikits-labelencoder-correctly-across-multiple-programs
+'''
 
 '''
 Too hardcoded code
@@ -78,7 +85,8 @@ def get_1s_mel_spectrogram(path2csv, n_mels=64, win_len=0.04, hop_len=0.02, mono
                     f.close()
 
 
-def compact_audio_files(path2spectrograms, n_mels, n_channels):
+def compact_audio_files(path2spectrograms, path2val_spectrograms,
+                        n_mels, n_channels, input_name):
     onlyfiles = [f for f in listdir(path2spectrograms) if isfile(join(path2spectrograms, f))]
 
     if n_channels is not None:
@@ -87,19 +95,48 @@ def compact_audio_files(path2spectrograms, n_mels, n_channels):
         features = np.zeros((len(onlyfiles), n_mels, 50))
     labels = [None] * len(onlyfiles)
 
-    for i in range(0, len(onlyfiles)):
+    for i in tqdm(range(0, len(onlyfiles))):
         with open(path2spectrograms + '/' + onlyfiles[i], 'rb') as f:  # Python 3: open(..., 'rb')
             features_aux, labels_aux = pickle.load(f)
         features[i] = features_aux
         labels[i] = labels_aux
 
+    label_encoder = LabelEncoder()
+    label_encoder.fit(labels)
+    label_int = label_encoder.transform(labels)
+
     # Saving the objects:
     # with open('training_setup.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
     #    pickle.dump([features, labels], f)
-    hf = h5py.File('training_setup_lrd.h5', 'w')
+    hf = h5py.File('training_setup_{}.h5'.format(input_name), 'w')
     hf.create_dataset("features", data=features)
-    hf.create_dataset("labels", labels)
+    hf.create_dataset("labels", data=label_int)
     hf.close()
+
+    onlyfiles_val = [f for f in listdir(path2val_spectrograms) if isfile(join(path2val_spectrograms, f))]
+
+    if n_channels is not None:
+        features_val = np.zeros((len(onlyfiles_val), n_mels, 50, n_channels))
+    else:
+        features_val = np.zeros((len(onlyfiles_val), n_mels, 50))
+    labels_val = [None] * len(onlyfiles_val)
+
+    for i in tqdm(range(0, len(onlyfiles_val))):
+        with open(path2val_spectrograms + '/' + onlyfiles_val[i], 'rb') as f:  # Python 3: open(..., 'rb')
+            features_aux, labels_aux = pickle.load(f)
+        features_val[i] = features_aux
+        labels_val[i] = labels_aux
+        
+    labels_val_int = label_encoder.transform(labels_val)
+
+    hf = h5py.File('val_setup_{}.h5'.format(input_name), 'w')
+    hf.create_dataset("features", data=features_val)
+    hf.create_dataset("labels", data=labels_val_int)
+    hf.close()
+
+    encoder_file = open('encoder_{}.pkl'.format(input_name), 'wb')
+    pickle.dump(labels, encoder_file)
+    encoder_file.close()
 
 
 if __name__ == '__main__':
@@ -110,5 +147,7 @@ if __name__ == '__main__':
 
     # get_1s_mel_spectrogram(path2csv_evaluate, mono=False, val=True, folder_name='lrd')
     path2spectrograms = '../data/audiovisual/audio_spectrograms/train_lrd'
+    path2spectrograms_val = '../data/audiovisual/audio_spectrograms/val_lrd'
     n_mels = 64
-    compact_audio_files(path2spectrograms, n_mels, 3)
+    compact_audio_files(path2spectrograms, path2spectrograms_val,
+                        n_mels, 3, 'lrd')

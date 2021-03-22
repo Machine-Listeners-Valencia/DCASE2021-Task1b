@@ -2,6 +2,7 @@ import config
 from training_callbacks import create_callbacks
 from utils import create_training_outputs_folder, save_to_json, create_logger
 import os
+import multiprocessing
 
 path2callbacks = create_training_outputs_folder(config.path2outputs)
 
@@ -65,4 +66,8 @@ def train(path2callbacks):
 if __name__ == '__main__':
     #path2callbacks = create_training_outputs_folder(config.path2outputs)
 
-    train(path2callbacks)
+    process_training = multiprocessing.Process(target=train, args=(path2callbacks,))
+    process_training.start()
+    process_training.join()
+
+    #train(path2callbacks)

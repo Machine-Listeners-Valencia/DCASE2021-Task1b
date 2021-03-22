@@ -69,6 +69,8 @@ def audio_trainer(model, path2features, callbacks=None):
     y_val = hf_val['labels']
     hf_val.close()
 
+    # TODO: convert to one-hot encoder
+
     logger.info('CREATING MIXUP GENERATOR')
     audio_gen = AudioMixupGenerator(x_train=x_train, y_train=y_train,
                                     alpha=config.audio_train_gen_args['alpha'])

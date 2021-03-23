@@ -5,6 +5,7 @@ from generators import AudioMixupGenerator
 import logging
 import time
 from utils import convert_to_preferred_format
+from keras.utils import to_categorical
 
 
 def image_trainer(model, path2data, callbacks=None):
@@ -56,24 +57,27 @@ def image_trainer(model, path2data, callbacks=None):
 def audio_trainer(model, path2features, callbacks=None):
     import h5py
 
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger('my_logger')
     logger.info('LOADING DATA')
 
-    hf_train = h5py.File(path2features + 'train.h5')  # TODO
-    x_train = hf_train['features']
-    y_train = hf_train['labels']
+    hf_train = h5py.File(path2features + 'train.h5', 'r')
+    x_train = hf_train['features'][:]
+    y_train = hf_train['labels'][:]
     hf_train.close()
 
-    hf_val = h5py.File(path2features + 'val.h5')
-    x_val = hf_val['features']
-    y_val = hf_val['labels']
+    hf_val = h5py.File(path2features + 'val.h5', 'r')
+    x_val = hf_val['features'][:]
+    y_val = hf_val['labels'][:]
     hf_val.close()
 
-    # TODO: convert to one-hot encoder
+    y_train = to_categorical(y_train)
+    y_val = to_categorical(y_val)
 
     logger.info('CREATING MIXUP GENERATOR')
     audio_gen = AudioMixupGenerator(x_train=x_train, y_train=y_train,
                                     alpha=config.audio_train_gen_args['alpha'])
+
+    model.compile(optimizer="Adam", loss="categorical_crossentropy", metrics=["categorical_accuracy"])
 
     logger.info('STARTING FITTING')
 

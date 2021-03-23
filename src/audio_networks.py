@@ -4,6 +4,7 @@ from tensorflow.keras.layers import (Conv2D, Dense, Permute, GlobalAveragePoolin
 import tensorflow.keras.backend as k
 from tensorflow.keras.models import Model
 import config
+import tensorflow as tf
 
 
 def construct_asc_network_csse(include_classification=True, **parameters):
@@ -190,7 +191,8 @@ def _tensor_shape(tensor):
     Returns:
 
     """
-    return getattr(tensor, '_shape_val')
+    return tensor.get_shape()
+    #return getattr(tensor, '_shape_val')
     #return getattr(tensor, '_keras_shape')
 
 

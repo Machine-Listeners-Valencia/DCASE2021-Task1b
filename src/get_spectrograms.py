@@ -27,6 +27,12 @@ def get_1s_mel_spectrogram(path2csv, n_mels=64, win_len=0.04, hop_len=0.02, mono
     audio_files = dataframe['filename_audio'].tolist()
     audio_labels = dataframe['scene_label'].tolist()
 
+    if os.path.isdir('../data/audiovisual/audio_spectrograms/val_{}/'.format(folder_name)) is False:
+        os.mkdir('../data/audiovisual/audio_spectrograms/val_{}/'.format(folder_name))
+
+    if os.path.isdir('../data/audiovisual/audio_spectrograms/train_{}/'.format(folder_name)) is False:
+        os.mkdir('../data/audiovisual/audio_spectrograms/train_{}/'.format(folder_name))
+
     for ii in tqdm(range(0, len(audio_files))):
         y, sr = librosa.load('../data/audiovisual/{}'.format(audio_files[ii]),
                              sr=None, mono=mono)
@@ -50,39 +56,69 @@ def get_1s_mel_spectrogram(path2csv, n_mels=64, win_len=0.04, hop_len=0.02, mono
                                                 fmax=int(sr / 2),
                                                 win_length=int(win_len * sr),
                                                 hop_length=int(hop_len * sr))
-            S_db_l = librosa.power_to_db(Sl)
+            S_db_l = librosa.power_to_db(np.abs(Sl**2))
             S_db_l = S_db_l[:, :500]
             Sr = librosa.feature.melspectrogram(y=np.asfortranarray(y[1].copy()), sr=sr, n_mels=n_mels,
                                                 fmax=int(sr / 2),
                                                 win_length=int(win_len * sr),
                                                 hop_length=int(hop_len * sr))
-            S_db_r = librosa.power_to_db(Sr)
+            S_db_r = librosa.power_to_db(np.abs(Sr**2))
             S_db_r = S_db_r[:, :500]
             Sd = librosa.feature.melspectrogram(y=np.asfortranarray(y[0].copy()) - np.asfortranarray(y[1].copy()),
                                                 sr=sr, n_mels=n_mels, fmax=int(sr / 2),
                                                 win_length=int(win_len * sr),
                                                 hop_length=int(hop_len * sr))
-            S_db_d = librosa.power_to_db(Sd)
+            S_db_d = librosa.power_to_db(np.abs(Sd**2))
             S_db_d = S_db_d[:, :500]
 
-            # TODO: not working
             S_db = np.dstack([S_db_l, S_db_r, S_db_d])
 
-            # 10 clips per audio
-            for jj in range(0, 10):
-                S_db_aux = S_db[:, jj * 50:(jj + 1) * 50]
-                filename_aux = os.path.splitext(os.path.basename(audio_files[ii]))[0]
-                if val:
-                    with open('../data/audiovisual/audio_spectrograms/'
-                              'val_{}/{}_{}.pickle'.format(folder_name, filename_aux, jj), 'wb') as f:
-                        pickle.dump([S_db_aux, audio_labels[ii]], f)
-                    f.close()
-                else:
-                    with open('../data/audiovisual/audio_spectrograms/'
-                              'train_{}/{}_{}.pickle'.format(folder_name, filename_aux, jj), 'wb') as f:
-                        pickle.dump([S_db_aux, audio_labels[ii]], f)
+        elif folder_name == 'hpd':
 
-                    f.close()
+            y_mono = librosa.to_mono(y)
+
+            D = librosa.stft(y_mono)
+
+            D_harmonic, D_percussive = librosa.decompose.hpss(D)
+
+            Sh = librosa.feature.melspectrogram(S=D_harmonic, sr=sr, n_mels=n_mels,
+                                                fmax=int(sr / 2),
+                                                win_length=int(win_len * sr),
+                                                hop_length=int(hop_len * sr))
+            S_db_h = librosa.power_to_db(np.abs(Sh**2))
+            S_db_h = S_db_h[:, :500]
+
+            Sp = librosa.feature.melspectrogram(S=D_percussive, sr=sr, n_mels=n_mels,
+                                                fmax=int(sr / 2),
+                                                win_length=int(win_len * sr),
+                                                hop_length=int(hop_len * sr))
+            S_db_p = librosa.power_to_db(np.abs(Sp**2))
+            S_db_p = S_db_p[:, :500]
+
+            Sd = librosa.feature.melspectrogram(y=np.asfortranarray(y[0].copy()) - np.asfortranarray(y[1].copy()),
+                                                sr=sr, n_mels=n_mels, fmax=int(sr / 2),
+                                                win_length=int(win_len * sr),
+                                                hop_length=int(hop_len * sr))
+            S_db_d = librosa.power_to_db(np.abs(Sd**2))
+            S_db_d = S_db_d[:, :500]
+
+            S_db = np.dstack([S_db_h, S_db_p, S_db_d])
+
+        # 10 clips per audio
+        for jj in range(0, 10):
+            S_db_aux = S_db[:, jj * 50:(jj + 1) * 50]
+            filename_aux = os.path.splitext(os.path.basename(audio_files[ii]))[0]
+            if val:
+                with open('../data/audiovisual/audio_spectrograms/'
+                          'val_{}/{}_{}.pickle'.format(folder_name, filename_aux, jj), 'wb') as f:
+                    pickle.dump([S_db_aux, audio_labels[ii]], f)
+                f.close()
+            else:
+                with open('../data/audiovisual/audio_spectrograms/'
+                          'train_{}/{}_{}.pickle'.format(folder_name, filename_aux, jj), 'wb') as f:
+                    pickle.dump([S_db_aux, audio_labels[ii]], f)
+
+                f.close()
 
 
 def compact_audio_files(path2spectrograms, path2val_spectrograms,
@@ -126,7 +162,7 @@ def compact_audio_files(path2spectrograms, path2val_spectrograms,
             features_aux, labels_aux = pickle.load(f)
         features_val[i] = features_aux
         labels_val[i] = labels_aux
-        
+
     labels_val_int = label_encoder.transform(labels_val)
 
     hf = h5py.File('val_setup_{}.h5'.format(input_name), 'w')
@@ -145,9 +181,11 @@ if __name__ == '__main__':
     path2csv_evaluate = '../data/audiovisual/TAU-urban-audio-visual-scenes-2021-development.meta/evaluation_setup' \
                         '/fold1_evaluate.csv'
 
-    # get_1s_mel_spectrogram(path2csv_evaluate, mono=False, val=True, folder_name='lrd')
-    path2spectrograms = '../data/audiovisual/audio_spectrograms/train_lrd'
-    path2spectrograms_val = '../data/audiovisual/audio_spectrograms/val_lrd'
+    folder_name = 'lrd'
+    get_1s_mel_spectrogram(path2csv_train, mono=False, val=False, folder_name=folder_name)
+    get_1s_mel_spectrogram(path2csv_evaluate, mono=False, val=True, folder_name=folder_name)
+    path2spectrograms = '../data/audiovisual/audio_spectrograms/train_{}'.format(folder_name)
+    path2spectrograms_val = '../data/audiovisual/audio_spectrograms/val_{}'.format(folder_name)
     n_mels = 64
     compact_audio_files(path2spectrograms, path2spectrograms_val,
-                        n_mels, 3, 'lrd')
+                        n_mels, 3, folder_name)

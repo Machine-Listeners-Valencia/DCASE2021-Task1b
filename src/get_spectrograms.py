@@ -164,14 +164,17 @@ def get_1s_gammatone_spectrogram(path2csv, n_channels=64, win_len=0.04, hop_len=
 
 
 def compact_audio_files(path2spectrograms, path2val_spectrograms,
-                        n_mels, n_channels, input_name):
+                        n_mels, n_channels, input_name, rep='mel'):
     if os.path.isdir('../data/audiovisual/audio_spectrograms/{}_setup/'.format(input_name)) is False:
         os.mkdir('../data/audiovisual/audio_spectrograms/{}_setup/'.format(input_name))
 
     onlyfiles = [f for f in listdir(path2spectrograms) if isfile(join(path2spectrograms, f))]
 
     if n_channels is not None:
-        features = np.zeros((len(onlyfiles), n_mels, 50, n_channels))
+        if rep == 'gammatone':
+            features = np.zeros((len(onlyfiles), n_mels, 48, n_channels))
+        else:
+            features = np.zeros((len(onlyfiles), n_mels, 50, n_channels))
     else:
         features = np.zeros((len(onlyfiles), n_mels, 50))
     labels = [None] * len(onlyfiles)
@@ -179,7 +182,7 @@ def compact_audio_files(path2spectrograms, path2val_spectrograms,
     for i in tqdm(range(0, len(onlyfiles))):
         with open(path2spectrograms + '/' + onlyfiles[i], 'rb') as f:  # Python 3: open(..., 'rb')
             features_aux, labels_aux = pickle.load(f)
-        features[i] = features_aux
+        features[i] = features_aux[:, 0:48, :]
         labels[i] = labels_aux
 
     label_encoder = LabelEncoder()
@@ -189,8 +192,12 @@ def compact_audio_files(path2spectrograms, path2val_spectrograms,
     # Saving the objects:
     # with open('training_setup.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
     #    pickle.dump([features, labels], f)
-    hf = h5py.File('../data/audiovisual/audio_spectrograms/{}_setup/'
-                   'training_setup_{}.h5'.format(input_name, input_name), 'w')
+    if rep == 'gammatone':
+        hf = h5py.File('../data/audiovisual/audio_spectrograms/{}_setup/'
+                       'training_setup_{}_{}.h5'.format(input_name, input_name, rep), 'w')
+    else:
+        hf = h5py.File('../data/audiovisual/audio_spectrograms/{}_setup/'
+                       'training_setup_{}.h5'.format(input_name, input_name), 'w')
     hf.create_dataset("features", data=features)
     hf.create_dataset("labels", data=label_int)
     hf.close()
@@ -198,7 +205,10 @@ def compact_audio_files(path2spectrograms, path2val_spectrograms,
     onlyfiles_val = [f for f in listdir(path2val_spectrograms) if isfile(join(path2val_spectrograms, f))]
 
     if n_channels is not None:
-        features_val = np.zeros((len(onlyfiles_val), n_mels, 50, n_channels))
+        if rep == 'gammatone':
+            features_val = np.zeros((len(onlyfiles_val), n_mels, 48, n_channels))
+        else:
+            features_val = np.zeros((len(onlyfiles_val), n_mels, 50, n_channels))
     else:
         features_val = np.zeros((len(onlyfiles_val), n_mels, 50))
     labels_val = [None] * len(onlyfiles_val)
@@ -206,20 +216,24 @@ def compact_audio_files(path2spectrograms, path2val_spectrograms,
     for i in tqdm(range(0, len(onlyfiles_val))):
         with open(path2val_spectrograms + '/' + onlyfiles_val[i], 'rb') as f:  # Python 3: open(..., 'rb')
             features_aux, labels_aux = pickle.load(f)
-        features_val[i] = features_aux
+        features_val[i] = features_aux[:, 0:48, :]
         labels_val[i] = labels_aux
 
     labels_val_int = label_encoder.transform(labels_val)
 
-    hf = h5py.File('../data/audiovisual/audio_spectrograms/{}_setup/'
-                   'val_setup_{}.h5'.format(input_name, input_name), 'w')
+    if rep == 'gammatone':
+        hf = h5py.File('../data/audiovisual/audio_spectrograms/{}_setup/'
+                       'val_setup_{}_{}.h5'.format(input_name, input_name, rep), 'w')
+    else:
+        hf = h5py.File('../data/audiovisual/audio_spectrograms/{}_setup/'
+                       'val_setup_{}.h5'.format(input_name, input_name), 'w')
     hf.create_dataset("features", data=features_val)
     hf.create_dataset("labels", data=labels_val_int)
     hf.close()
 
     encoder_file = open('../data/audiovisual/audio_spectrograms/{}_setup/'
-                        'encoder_{}.pkl'.format(input_name, input_name), 'wb')
-    pickle.dump(labels, encoder_file)
+                        'encoder_{}_{}.pkl'.format(input_name, input_name, rep), 'wb')
+    pickle.dump(label_encoder, encoder_file)
     encoder_file.close()
 
 
@@ -246,3 +260,14 @@ if __name__ == '__main__':
     n_mels = 64
     compact_audio_files(path2spectrograms, path2spectrograms_val,
                         n_mels, 3, folder_name)
+
+    folder_name = 'lrd'
+    get_1s_gammatone_spectrogram(path2csv_train, mono=False, val=False, folder_name=folder_name)
+    get_1s_gammatone_spectrogram(path2csv_evaluate, mono=False, val=True, folder_name=folder_name)
+    path2spectrograms = '../data/audiovisual/audio_spectrograms/gammatone_train_{}'.format(folder_name)
+    path2spectrograms_val = '../data/audiovisual/audio_spectrograms/gammatone_val_{}'.format(folder_name)
+    n_mels = 64
+    compact_audio_files(path2spectrograms, path2spectrograms_val,
+                       n_mels, 3, folder_name, rep='gammatone')
+
+

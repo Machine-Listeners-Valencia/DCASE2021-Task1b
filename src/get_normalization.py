@@ -62,7 +62,7 @@ def apply_normalize_spectrogram(path2train, path2val, path2normalizer, input_nam
 
     val_file = h5py.File(path2val, 'r')
     val_features = val_file['features'][:]
-    val_labels = val_file['features'][:]
+    val_labels = val_file['labels'][:]
     val_file.close()
 
     normalize_file = h5py.File(path2normalizer, 'r')
@@ -73,13 +73,13 @@ def apply_normalize_spectrogram(path2train, path2val, path2normalizer, input_nam
     ch1_std = normalize_file['channel_1_std'][:]
     ch2_std = normalize_file['channel_2_std'][:]
 
-    for j in range(0, train_features.shape[0]):
+    for j in tqdm(range(0, train_features.shape[0])):
         for jj in range(0, train_features.shape[1]):
             train_features[j, jj, :, 0] = (train_features[j, jj, :, 0] - ch0_mean[jj]) / ch0_std[jj]
             train_features[j, jj, :, 1] = (train_features[j, jj, :, 1] - ch1_mean[jj]) / ch1_std[jj]
             train_features[j, jj, :, 2] = (train_features[j, jj, :, 2] - ch2_mean[jj]) / ch2_std[jj]
 
-    for j in range(0, val_features.shape[0]):
+    for j in tqdm(range(0, val_features.shape[0])):
         for jj in range(0, val_features.shape[1]):
             val_features[j, jj, :, 0] = (val_features[j, jj, :, 0] - ch0_mean[jj]) / ch0_std[jj]
             val_features[j, jj, :, 1] = (val_features[j, jj, :, 1] - ch1_mean[jj]) / ch1_std[jj]
@@ -112,9 +112,16 @@ def apply_normalize_spectrogram(path2train, path2val, path2normalizer, input_nam
 
 
 if __name__ == '__main__':
-    path2train = '/home/javi/repos/DCASE2021-Task1b/data/audiovisual' \
-                 '/audio_spectrograms/lrd_setup/training_setup_lrd_gammatone.h5'
-    path2val = '/home/javi/repos/DCASE2021-Task1b/data/audiovisual' \
-               '/audio_spectrograms/lrd_setup/val_setup_lrd_gammatone.h5'
+    # path2train = '/home/javi/repos/DCASE2021-Task1b/data/audiovisual' \
+    #              '/audio_spectrograms/lrd_setup/training_setup_lrd_gammatone.h5'
+    # path2val = '/home/javi/repos/DCASE2021-Task1b/data/audiovisual' \
+    #            '/audio_spectrograms/lrd_setup/val_setup_lrd_gammatone.h5'
+    #
+    # normalize_spectrogram(path2train, path2val)
 
-    normalize_spectrogram(path2train, path2val)
+    path2train = '../data/audiovisual/audio_spectrograms/lrd_setup/training_setup_lrd.h5'
+    path2val = '../data/audiovisual/audio_spectrograms/lrd_setup/val_setup_lrd.h5'
+    path2normalizer = '../data/audiovisual/audio_spectrograms/lrd_setup/scaler_mel_lrd.h5'
+    input_name = 'lrd'
+
+    apply_normalize_spectrogram(path2train, path2val, path2normalizer, input_name, rep='mel')

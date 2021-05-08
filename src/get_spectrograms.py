@@ -182,7 +182,10 @@ def compact_audio_files(path2spectrograms, path2val_spectrograms,
     for i in tqdm(range(0, len(onlyfiles))):
         with open(path2spectrograms + '/' + onlyfiles[i], 'rb') as f:  # Python 3: open(..., 'rb')
             features_aux, labels_aux = pickle.load(f)
-        features[i] = features_aux[:, 0:48, :]
+        if rep == 'gammatone':
+            features[i] = features_aux[:, 0:48, :]
+        else:
+            features[i] = features_aux
         labels[i] = labels_aux
 
     label_encoder = LabelEncoder()
@@ -216,7 +219,10 @@ def compact_audio_files(path2spectrograms, path2val_spectrograms,
     for i in tqdm(range(0, len(onlyfiles_val))):
         with open(path2val_spectrograms + '/' + onlyfiles_val[i], 'rb') as f:  # Python 3: open(..., 'rb')
             features_aux, labels_aux = pickle.load(f)
-        features_val[i] = features_aux[:, 0:48, :]
+        if rep == 'gammatone':
+            features_val[i] = features_aux[:, 0:48, :]
+        else:
+            features_val[i] = features_aux
         labels_val[i] = labels_aux
 
     labels_val_int = label_encoder.transform(labels_val)
@@ -268,6 +274,4 @@ if __name__ == '__main__':
     path2spectrograms_val = '../data/audiovisual/audio_spectrograms/gammatone_val_{}'.format(folder_name)
     n_mels = 64
     compact_audio_files(path2spectrograms, path2spectrograms_val,
-                       n_mels, 3, folder_name, rep='gammatone')
-
-
+                        n_mels, 3, folder_name, rep='gammatone')

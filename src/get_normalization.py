@@ -112,16 +112,18 @@ def apply_normalize_spectrogram(path2train, path2val, path2normalizer, input_nam
 
 
 if __name__ == '__main__':
-    # path2train = '/home/javi/repos/DCASE2021-Task1b/data/audiovisual' \
-    #              '/audio_spectrograms/lrd_setup/training_setup_lrd_gammatone.h5'
-    # path2val = '/home/javi/repos/DCASE2021-Task1b/data/audiovisual' \
-    #            '/audio_spectrograms/lrd_setup/val_setup_lrd_gammatone.h5'
-    #
-    # normalize_spectrogram(path2train, path2val)
-
-    path2train = '../data/audiovisual/audio_spectrograms/lrd_setup/training_setup_lrd.h5'
-    path2val = '../data/audiovisual/audio_spectrograms/lrd_setup/val_setup_lrd.h5'
-    path2normalizer = '../data/audiovisual/audio_spectrograms/lrd_setup/scaler_mel_lrd.h5'
+    path2train = '/home/javi/repos/DCASE2021-Task1b/data/audiovisual' \
+                 '/audio_spectrograms/lrd_setup/training_setup_lrd_gammatone.h5'
+    path2val = '/home/javi/repos/DCASE2021-Task1b/data/audiovisual' \
+               '/audio_spectrograms/lrd_setup/val_setup_lrd_gammatone.h5'
     input_name = 'lrd'
+    path2normalizer = '../data/audiovisual/audio_spectrograms/lrd_setup/scaler_gammatone_lrd.h5'
 
-    apply_normalize_spectrogram(path2train, path2val, path2normalizer, input_name, rep='mel')
+    apply_normalize_spectrogram(path2train, path2val, path2normalizer, 'lrd', rep='gammatone')
+
+    # path2train = '../data/audiovisual/audio_spectrograms/lrd_setup/training_setup_lrd.h5'
+    # path2val = '../data/audiovisual/audio_spectrograms/lrd_setup/val_setup_lrd.h5'
+    # path2normalizer = '../data/audiovisual/audio_spectrograms/lrd_setup/scaler_mel_lrd.h5'
+    # input_name = 'lrd'
+    #
+    # apply_normalize_spectrogram(path2train, path2val, path2normalizer, input_name, rep='mel')

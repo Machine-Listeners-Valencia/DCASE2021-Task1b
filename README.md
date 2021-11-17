@@ -5,7 +5,7 @@ Audio-Visual Classifier in Acoustic Scene Clasification
 Framework that uses video and audio data to predict a scene. The audio network uses squeeze-excitation techniques. The visual network is trained using a fine-tuning strategy with places365 checkpoint.
 
 <p align="center">
-  <img src="images/framework" width="350" title="framework image">
+  <img src="images/framework.jpg" width="350" title="framework image">
 </p>
 
 ## Steps
@@ -26,14 +26,14 @@ Development | Evaluation |
 90% | 86.5% | 
 
 <p align="center">
-  <img src="images/bars" width="350" title="bars image">
+  <img src="images/bars.jpg" width="350" title="bars image">
 </p>
 
 ## Citation
 
-[Paper](http://dcase.community/documents/workshop2021/proceedings/DCASE2021Workshop_Naranjo-Alcazar_11.pdf)
-[Poster](http://dcase.community/documents/workshop2021/posters/DCASE2021Workshop_Naranjo-Alcazar_11-poster.pdf)
-[Squeeze-Excitation poster](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9118879)
+- [Paper](http://dcase.community/documents/workshop2021/proceedings/DCASE2021Workshop_Naranjo-Alcazar_11.pdf)
+- [Poster](http://dcase.community/documents/workshop2021/posters/DCASE2021Workshop_Naranjo-Alcazar_11-poster.pdf)
+- [Squeeze-Excitation paper](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9118879)
 
 ```
 @inproceedings{Naranjo-Alcazar2021,

@@ -5,7 +5,7 @@ Audio-Visual Classifier in Acoustic Scene Clasification
 Framework that uses video and audio data to predict a scene. The audio network uses squeeze-excitation techniques. The visual network is trained using a fine-tuning strategy with places365 checkpoint.
 
 <p align="center">
-  <img src="images/framework.jpg" alt=500 width="600" title="framework image">
+  <img src="images/framework.jpg" alt="800" width="800" title="framework image">
 </p>
 
 ## Steps
